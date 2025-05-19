@@ -1,0 +1,31 @@
+#include <stdio.h>
+
+int main() {
+    int valor;
+    int moedas[6] = {100,50,25,10,5,1};
+    int quantidades[6] = {0};
+
+    printf("Gigite o valor do centavo (1 a 100):");
+    scanff("%d",&valor);
+
+    if(valor < 1 || valor > 100) {
+        printf("ERROR, digite um valor entre 1 a 100");
+        return 1;
+    }
+
+
+    for(int i = 0; i < 6; i++) {
+        qunantidade[i] = valor/ moedas[i]
+        valor %= moedas[i];
+    }
+
+    printf("TROCO:\n");
+    if(quantidade[0] > 0) printf("%d moedas (s) de R$ 1,00\n", quantidae[0]);
+    if(quantidade[1] > 0) printf("%d moedas (s) de R$ 0,50\n ", quantidade[1]);
+    if(quantidade[2] > 0) printf("%d moedas (s) de R$ 0,25\n", quantidade[2]);
+    if(quantidade[3] > 0) printf("%d moedas (s) de R$ 0,10\n", quantidade[3]);
+    if(quantidade[4] > 0) printf("%d moedas (s) de R$ 0,05\n", quantidade[4]);
+    if(quantidade[5] > 0) printf("%d moedas (s) de R$ 0,01\n", quantidade[5]);
+
+    return 0;
+}
