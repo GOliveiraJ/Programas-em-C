@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_MOTORISTAS 1000
+#define ANO_ATUAL 2024
+
+int main() {
+    int anoNascimento[MAX_MOTORISTAS];
+    char sexo[MAX_MOTORISTAS];
+    int procedencia[MAX_MOTORISTAS];
+    int totalMotoristas;
+
+    int menos21 = 0, mulheresCapital = 0, idososInterior = 0;
+    bool existeMulherIdosa = false;
+
+    printf("Digite o número de motoristas envolvidos no acidente: ");
+    scanf("%d", &totalMotoristas);
+
+    for (int i = 0; i < totalMotoristas; i++) {
+        printf("\nMotorista %d:\n", i + 1);
+        printf("Ano de nascimento: ");
+        scanf("%d", &anoNascimento[i]);
+        printf("Sexo (M para Masculino, F para Feminino): ");
+        scanf(" %c", &sexo[i]); 
+        printf("Procedência (0 - Capital, 1 - Interior, 2 - Outro estado): ");
+        scanf("%d", &procedencia[i]);
+    }
+
+    for (int i = 0; i < totalMotoristas; i++) {
+        int idade = ANO_ATUAL - anoNascimento[i];
+
+        if (idade < 21) {
+            menos21++;
+        }
+
+        if (sexo[i] == 'F' || sexo[i] == 'f') {
+            if (procedencia[i] == 0) {
+                mulheresCapital++;
+            }
+            if (idade > 60) {
+                existeMulherIdosa = true;
+            }
+        }
+
+        if (procedencia[i] == 1 && idade > 60) {
+            idososInterior++;
+        }
+    }
+
+    printf("\n--- RESULTADOS ---\n");
+    printf("a) Porcentagem de motoristas com menos de 21 anos: %.2f%%\n", (menos21 * 100.0) / totalMotoristas);
+    printf("b) Quantidade de mulheres da capital: %d\n", mulheresCapital);
+    printf("c) Motoristas do interior com mais de 60 anos: %d\n", idososInterior);
+    printf("d) Existe alguma mulher com mais de 60 anos: %s\n", existeMulherIdosa ? "Sim" : "Não");
+
+    return 0;
+}
