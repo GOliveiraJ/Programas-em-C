@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define TAM_NOME 100
+
+typedef struct {
+    char nome[TAM_NOME];
+    float nota;
+} Funcionario;
+
+int main() {
+    FILE *arquivo = fopen("funcionarios.dat", "wb");
+    if (!arquivo) {
+        perror("Erro ao abrir o arquivo");
+        return 1;
+    }
+
+    Funcionario funcionario;
+    printf("Digite o nome e a nota dos funcionários (digite 'fim' para finalizar):\n");
+
+    while (1) {
+        printf("Nome: ");
+        scanf("%s", funcionario.nome);
+
+        if (strcmp(funcionario.nome, "fim") == 0) {
+            break;
+        }
+
+        printf("Nota: ");
+        scanf("%f", &funcionario.nota);
+
+        fwrite(&funcionario, sizeof(Funcionario), 1, arquivo);
+    }
+
+    fclose(arquivo);
+    printf("Dados gravados no arquivo funcionarios.dat com sucesso.\n");
+
+    return 0;
+}
