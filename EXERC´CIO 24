@@ -1,0 +1,35 @@
+#include <stdio.h>
+
+int main() {
+    int idade, totalPessoas = 0, totalIdades = 0, pessoas21a65 = 0;
+
+    printf("Digite as idades das pessoas (digite -1 para finalizar):\n");
+
+    while (1) {
+        scanf("%d", &idade);
+
+        if (idade == -1) {
+            break;
+        }
+
+        totalPessoas++;
+        totalIdades += idade;
+
+        if (idade >= 21 && idade <= 65) {
+            pessoas21a65++;
+        }
+    }
+
+    if (totalPessoas > 0) {
+        double mediaIdades = (double)totalIdades / totalPessoas;
+
+        double porcentagem21a65 = ((double)pessoas21a65 / totalPessoas) * 100;
+
+        printf("\nIdade média do grupo: %.2f\n", mediaIdades);
+        printf("Porcentagem de pessoas entre 21 e 65 anos: %.2f%%\n", porcentagem21a65);
+    } else {
+        printf("Nenhuma idade válida foi inserida.\n");
+    }
+
+    return 0;
+}
