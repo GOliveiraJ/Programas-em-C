@@ -1,0 +1,39 @@
+#include <stdio.h>
+
+void converterParaRomano(int numero) {
+    char *romano[] = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", 
+                      "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC", 
+                      "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", 
+                      "M", "MM", "MMM"};
+
+    int milhar = numero / 1000;
+    int centena = (numero % 1000) / 100;
+    int dezena = (numero % 100) / 10;
+    int unidade = numero % 10;
+    if (milhar > 0) {
+        for (int i = 0; i < milhar; i++) {
+            printf("M");
+        }
+    }
+    printf("%s", romano[centena + 18]); 
+    printf("%s", romano[dezena + 8]);   
+    printf("%s", romano[unidade]);      
+
+    printf("\n");
+}
+
+int main() {
+    int numero;
+
+    printf("Digite um número inteiro decimal (1-3999): ");
+    scanf("%d", &numero);
+
+    if (numero < 1 || numero > 3999) {
+        printf("Número fora do intervalo válido (1 a 3999).\n");
+    } else {
+        printf("O número %d em romano é: ", numero);
+        converterParaRomano(numero); 
+    }
+
+    return 0;
+}
