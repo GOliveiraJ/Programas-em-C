@@ -1,0 +1,35 @@
+#include <stdio.h>
+
+#define LINHAS 10
+
+void calcularTrianguloPascal(int triangulo[LINHAS][LINHAS]) {
+    for (int i = 0; i < LINHAS; i++) {
+        triangulo[i][0] = 1; // Primeiro elemento de cada linha é 1
+        for (int j = 1; j <= i; j++) {
+            if (j == i) {
+                triangulo[i][j] = 1; // Último elemento de cada linha é 1
+            } else {
+                triangulo[i][j] = triangulo[i - 1][j - 1] + triangulo[i - 1][j];
+            }
+        }
+    }
+}
+
+void exibirTrianguloPascal(int triangulo[LINHAS][LINHAS]) {
+    for (int i = 0; i < LINHAS; i++) {
+        for (int j = 0; j <= i; j++) {
+            printf("%d ", triangulo[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    int triangulo[LINHAS][LINHAS] = {0};
+
+    calcularTrianguloPascal(triangulo);
+    printf("As primeiras %d linhas do Triângulo de Pascal são:\n", LINHAS);
+    exibirTrianguloPascal(triangulo);
+
+    return 0;
+}
