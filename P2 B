@@ -1,0 +1,97 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Estrutura do nó da lista
+typedef struct No {
+    char nome[30];
+    struct No *proximo;
+} No;
+
+// Protótipos das funções
+void lerArquivo(const char *nomeArquivo, No **cabeca);
+void liberarLista(No *cabeca);
+void imprimirLista(No *cabeca);
+void inserirOrdenado(No **cabeca, const char *nome);
+No *criarNo(const char *nome);
+
+int main() {
+    No *lista = NULL;
+
+    // Lê os dois arquivos e insere os nomes na lista
+    lerArquivo("lista1.txt", &lista);
+    lerArquivo("lista2.txt", &lista);
+
+    printf("Nova relação de clientes (ordenada e sem duplicatas):\n");
+    imprimirLista(lista);
+
+    // Libera a memória da lista
+    liberarLista(lista);
+    return 0;
+}
+
+void lerArquivo(const char *nomeArquivo, No **cabeca) {
+    FILE *arquivo = fopen(nomeArquivo, "r");
+    char nome[30];
+
+    if (!arquivo) {
+        printf("Erro ao abrir %s\n", nomeArquivo);
+        return;
+    }
+
+    while (fscanf(arquivo, "%29s", nome) == 1) {
+        inserirOrdenado(cabeca, nome);
+    }
+
+    fclose(arquivo);
+}
+
+void liberarLista(No *cabeca) {
+    No *temp;
+    while (cabeca) {
+        temp = cabeca;
+        cabeca = cabeca->proximo;
+        free(temp);
+    }
+}
+
+void imprimirLista(No *cabeca) {
+    while (cabeca) {
+        printf("%s\n", cabeca->nome);
+        cabeca = cabeca->proximo;
+    }
+}
+
+void inserirOrdenado(No **cabeca, const char *nome) {
+    No *novoNo = criarNo(nome);
+    if (!novoNo) return; // Retorna se não conseguiu criar o nó
+
+    No **atual = cabeca;
+
+    // Percorre a lista para encontrar a posição correta
+    while (*atual && strcmp((*atual)->nome, nome) < 0) {
+        atual = &(*atual)->proximo;
+    }
+
+    // Verifica se o nome já existe na lista
+    if (*atual && strcmp((*atual)->nome, nome) == 0) {
+        free(novoNo); // Libera o nó criado porque já existe
+        return;
+    }
+
+    // Insere o novo nó na lista
+    novoNo->proximo = *atual;
+    *atual = novoNo;
+}
+
+No *criarNo(const char *nome) {
+    No *novoNo = (No *)malloc(sizeof(No));
+    if (!novoNo) {
+        printf("Erro ao alocar memória.\n");
+        return NULL;
+    }
+    strncpy(novoNo->nome, nome, 29);
+    novoNo->nome[29] = '\0'; // Garante que a string está terminada corretamente
+    novoNo->proximo = NULL;
+    return novoNo;
+}
