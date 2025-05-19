@@ -1,0 +1,50 @@
+#include <stdio.h>
+
+#define TAM 10
+#define TOTAL TAM * 3
+
+void ordenarVetor(int vetor[], int tamanho) {
+    int i, j, temp;
+    for (i = 0; i < tamanho - 1; i++) {
+        for (j = 0; j < tamanho - i - 1; j++) {
+            if (vetor[j] > vetor[j + 1]) {
+                temp = vetor[j];
+                vetor[j] = vetor[j + 1];
+                vetor[j + 1] = temp;
+            }
+        }
+    }
+}
+
+int main() {
+    int vetor1[TAM], vetor2[TAM], vetor3[TAM], vetorTotal[TOTAL];
+    int i, k = 0;
+
+    printf("Digite os elemetos do primeio vetor (%d números):\n", TAM);
+    for (i = 0; i < TAM; i++) {
+        scanf("%d", &vetor1[i]);
+        vetorTotal[k++] = vetor1[i];
+    }
+
+    printf("Digite os elementos do segundo vetor (%d números):\n", TAM);
+    for (i = 0; i < TAM; i++) {
+        scanf("%d", &vetor2[i]);
+        vetorTotal[k++] = vetor2[i];
+    }
+
+    printf("Digite os elementos do terceiro vetor (%d númros)\n", TAM);
+    for (i = 0; i < TAM; i++) {
+        scanf("%d", &vetor3[i]);
+        vetorTotal[k++] = vetor3[i];
+    }
+
+    ordenarVetor(vetorTotal, TOTAL);
+
+    printf("Vetor combiado em ordem crescente:\n");
+    for (i = 0; i < TOTAL; i++) {
+        printf("%d ", vetorTotal[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
