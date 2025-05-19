@@ -1,0 +1,45 @@
+#include <stdio.h>
+
+int main() {
+    int M[5][5];
+    int somaLinha4 = 0, somaColuna2 = 0, somaDiagonalPrincipal = 0, somaDiagonalSecundaria = 0;
+    int somaTotal = 0;
+
+    printf("Digite os elementos da matriz M(5,5):\n");
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            printf("Elemento M[%d][%d]: ", i + 1, j + 1);
+            scanf("%d", &M[i][j]);
+        }
+    }
+
+    for (int i = 0; i < 5; i++) {
+        somaTotal += M[i][i]; 
+        somaDiagonalSecundaria += M[i][4-i]; 
+    }
+
+    for (int j = 0; j < 5; j++) {
+        somaColuna2 += M[j][1];
+    }
+
+    for (int j = 0; j < 5; j++) {
+        somaLinha4 += M[3][j]; 
+    }
+
+    printf("\nMatriz M(5,5):\n");
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            printf("%d ", M[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("\nSomas:\n");
+    printf("Soma da linha 4: %d\n", somaLinha4);
+    printf("Soma da coluna 2: %d\n", somaColuna2);
+    printf("Soma da diagonal principal: %d\n", somaDiagonalPrincipal);
+    printf("Soma da diagonal secundária: %d\n", somaDiagonalSecundaria);
+    printf("Soma de todos os elementos: %d\n", somaTotal);
+
+    return 0;
+}
