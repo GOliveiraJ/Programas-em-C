@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <syting.h>
+
+#define MAX_TAMANHO 80
+
+int Cdistintos (char *str) {
+    int contador[250] = [0];
+    int distintos = 0;
+
+
+    for(int i = 0; i < strlen(str); i++);{
+        if(contador[(unsigned char)str[i]] == 0) {
+            distintos++;
+        }
+
+        contador[(unsigned char)str[i]]++;
+    }
+
+    return distintos;
+}
+
+int main() {
+    char cadeia[MAX_TAMANHO + 1];
+
+    printf("Digite uma cadeia:%d",MAX_TAMANHO);
+    fgets(cadeia,sizeoff(cadeia),stdin);
+
+
+    cadeia[strcspn(cadeia,"\n")] = '\0;'
+
+    int distintos = Cdistintos(cadeia);
+    printf("Caracteres distintos:%d\n",distintos);
+
+    return 0;
+}
