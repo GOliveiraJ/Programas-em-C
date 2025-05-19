@@ -1,0 +1,235 @@
+   #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_NOME 100
+#define MAX_PEDIDOS 100
+
+typedef struct {
+    int codigo;
+    char nome[MAX_NOME];
+    float preco;
+} ItemMenu;
+
+typedef struct {
+    int codigo;
+    char nome[MAX_NOME];
+} Garcom;
+
+typedef struct Pedido {
+    int codigoPedido;
+    int quantidade;
+    struct Pedido* proximo;
+} Pedido;
+
+typedef struct Mesa {
+    int numeroMesa;
+    int codigoGarcom;
+    float totalMesa;
+    Pedido* pedidos;
+    struct Mesa* proximo;
+} Mesa;
+
+void carregarMenu(ItemMenu menu[], int* numItens);
+void carregarGarcons(Garcom garcons[], int* numGarcons);
+
+Mesa* criarMesa(int numeroMesa, int codigoGarcom);
+Pedido* criarPedido(int codigoPedido, int quantidade);
+void adicionarPedido(Mesa* mesa, int codigoPedido, int quantidade);
+void atualizarTotalMesa(Mesa* mesa, ItemMenu menu[], int numItens);
+void fecharConta(Mesa* mesa, ItemMenu menu[], int numItens, Garcom garcons[], int numGarcons);
+void removerMesa(Mesa* mesa);
+void exibirNotaFiscal(Mesa* mesa, ItemMenu menu[], int numItens, Garcom garcons[], int numGarcons);
+
+int main() {
+    ItemMenu menu[MAX_PEDIDOS];
+    Garcom garcons[MAX_PEDIDOS];
+    int numItens = 0, numGarcons = 0;
+
+    carregarMenu(menu, &numItens);
+    carregarGarcons(garcons, &numGarcons);
+    
+    Mesa* mesas = NULL;
+    int escolha;
+    do {
+        printf("\nMenu do Restaurante\n");
+        printf("1) Adicionar Mesa\n");
+        printf("2) Fazer Pedido\n");
+        printf("3) Fechar Conta\n");
+        printf("4) Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &escolha);
+
+        switch (escolha) {
+            case 1: {
+                int numeroMesa, codigoGarcom;
+                printf("Número da Mesa: ");
+                scanf("%d", &numeroMesa);
+                printf("Código do Garçom: ");
+                scanf("%d", &codigoGarcom);
+                
+                Mesa* novaMesa = criarMesa(numeroMesa, codigoGarcom);
+                novaMesa->proximo = mesas;
+                mesas = novaMesa;
+                
+                printf("Mesa %d adicionada!\n", numeroMesa);
+                break;
+            }
+            case 2: {
+                int numeroMesa, codigoPedido, quantidade;
+                printf("Número da Mesa: ");
+                scanf("%d", &numeroMesa);
+                
+                Mesa* mesa = mesas;
+                while (mesa != NULL && mesa->numeroMesa != numeroMesa) {
+                    mesa = mesa->proximo;
+                }
+                
+                if (mesa == NULL) {
+                    printf("Mesa não encontrada!\n");
+                } else {
+                    printf("Código do Pedido: ");
+                    scanf("%d", &codigoPedido);
+                    printf("Quantidade: ");
+                    scanf("%d", &quantidade);
+                    adicionarPedido(mesa, codigoPedido, quantidade);
+                    atualizarTotalMesa(mesa, menu, numItens);
+                    printf("Pedido adicionado!\n");
+                }
+                break;
+            }
+            case 3: {
+                int numeroMesa;
+                printf("Número da Mesa: ");
+                scanf("%d", &numeroMesa);
+                
+                Mesa* mesa = mesas;
+                while (mesa != NULL && mesa->numeroMesa != numeroMesa) {
+                    mesa = mesa->proximo;
+                }
+                
+                if (mesa == NULL) {
+                    printf("Mesa não encontrada!\n");
+                } else {
+                    fecharConta(mesa, menu, numItens, garcons, numGarcons);
+                    removerMesa(mesa);
+                    printf("Conta fechada e mesa removida!\n");
+                }
+                break;
+            }
+            case 4:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opção inválida!\n");
+        }
+    } while (escolha != 4);
+
+    return 0;
+}
+
+void carregarMenu(ItemMenu menu[], int* numItens) {
+    FILE* f = fopen("menu.bin", "rb");
+    if (f == NULL) {
+        printf("Erro ao carregar o menu!\n");
+        exit(1);
+    }
+    fread(numItens, sizeof(int), 1, f);
+    fread(menu, sizeof(ItemMenu), *numItens, f);
+    fclose(f);
+}
+
+void carregarGarcons(Garcom garcons[], int* numGarcons) {
+    FILE* f = fopen("garcons.bin", "rb");
+    if (f == NULL) {
+        printf("Erro ao carregar os garçons!\n");
+        exit(1);
+    }
+    fread(numGarcons, sizeof(int), 1, f);
+    fread(garcons, sizeof(Garcom), *numGarcons, f);
+    fclose(f);
+}
+
+Mesa* criarMesa(int numeroMesa, int codigoGarcom) {
+    Mesa* novaMesa = (Mesa*)malloc(sizeof(Mesa));
+    novaMesa->numeroMesa = numeroMesa;
+    novaMesa->codigoGarcom = codigoGarcom;
+    novaMesa->totalMesa = 0;
+    novaMesa->pedidos = NULL;
+    novaMesa->proximo = NULL;
+    return novaMesa;
+}
+
+Pedido* criarPedido(int codigoPedido, int quantidade) {
+    Pedido* novoPedido = (Pedido*)malloc(sizeof(Pedido));
+    novoPedido->codigoPedido = codigoPedido;
+    novoPedido->quantidade = quantidade;
+    novoPedido->proximo = NULL;
+    return novoPedido;
+}
+
+// Adicionar um pedido à mesa
+void adicionarPedido(Mesa* mesa, int codigoPedido, int quantidade) {
+    Pedido* novoPedido = criarPedido(codigoPedido, quantidade);
+    if (mesa->pedidos == NULL) {
+        mesa->pedidos = novoPedido;
+    } else {
+        Pedido* temp = mesa->pedidos;
+        while (temp->proximo != NULL) {
+            temp = temp->proximo;
+        }
+        temp->proximo = novoPedido;
+    }
+}
+
+void atualizarTotalMesa(Mesa* mesa, ItemMenu menu[], int numItens) {
+    float total = 0;
+    Pedido* pedido = mesa->pedidos;
+    while (pedido != NULL) {
+        for (int i = 0; i < numItens; i++) {
+            if (menu[i].codigo == pedido->codigoPedido) {
+                total += menu[i].preco * pedido->quantidade;
+                break;
+            }
+        }
+        pedido = pedido->proximo;
+    }
+    mesa->totalMesa = total;
+}
+
+void fecharConta(Mesa* mesa, ItemMenu menu[], int numItens, Garcom garcons[], int numGarcons) {
+    printf("\n--- Nota Fiscal ---\n");
+    printf("Mesa %d\n", mesa->numeroMesa);
+    Pedido* pedido = mesa->pedidos;
+    while (pedido != NULL) {
+        for (int i = 0; i < numItens; i++) {
+            if (menu[i].codigo == pedido->codigoPedido) {
+                printf("%s x %d - R$ %.2f\n", menu[i].nome, pedido->quantidade, menu[i].preco * pedido->quantidade);
+                break;
+            }
+        }
+        pedido = pedido->proximo;
+    }
+    
+    for (int i = 0; i < numGarcons; i++) {
+        if (garcons[i].codigo == mesa->codigoGarcom) {
+            printf("\nGarçom: %s\n", garcons[i].nome);
+            break;
+        }
+    }
+    
+    printf("\nTotal: R$ %.2f\n", mesa->totalMesa);
+}
+
+void removerMesa(Mesa* mesa) {
+    if (mesa == NULL) return;
+    
+    Pedido* pedido = mesa->pedidos;
+    while (pedido != NULL) {
+        Pedido* temp = pedido;
+        pedido = pedido->proximo;
+        free(temp);
+    }
+    
+    free(mesa);
+}
