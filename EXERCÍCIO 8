@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+int main() {
+    int A[50];
+    int i, maior ,Smaior;
+
+    printf("Digite os 50 elemtos necessários\n");
+    for(i = 0; i < 50; i++) {
+        printf("A[%d]:",i);
+        scanf("%d",&A[i]);
+    }
+
+    if(A[0] > A[1]) {
+        maior = A[0];
+        Smaior = A[1
+    } else {
+        maio = A[1];
+        Smaior = A[0];
+    }
+
+    for(i = 2; i < 50; i++) {
+        if(A[i] > maior) {
+            Smaior = maior;
+            maior = A[i];
+        }
+    }
+
+    printf("Maior:%d",maior);
+    printf("Segundo maior:%d,Smaior");
+
+    return 0;
+}
