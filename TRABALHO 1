@@ -1,0 +1,193 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_ATRACOES 100
+#define MAX_RESUMO 1024
+
+typedef enum {OTIMO, BOM, REGULAR, RUIM, PESSIMO, CARO, BARATO, GRATIS} Avaliacao;
+
+typedef enum {RESTAURANTE, PRAIA, SHOW, TEATRO, PARQUE, MUSEU} TipoAtracao;
+
+typedef struct {
+    TipoAtracao tipo;
+    char local[100];
+    Avaliacao qualidade;
+    char resumo[MAX_RESUMO];
+} AtracaoTuristica;
+
+void conectarRegiao(FILE **regiao);
+void consultarDados(FILE *regiao);
+void incluirDescricao(FILE *regiao);
+void alterarDescricao(FILE *regiao);
+void excluirDescricao(FILE *regiao);
+void mostrarDescricao(FILE *regiao);
+
+const char* getAvaliacaoString(Avaliacao avaliacao) {
+    switch (avaliacao) {
+        case OTIMO: return "Ótimo";
+        case BOM: return "Bom";
+        case REGULAR: return "Regular";
+        case RUIM: return "Ruim";
+        case PESSIMO: return "Péssimo";
+        case CARO: return "Caro";
+        case BARATO: return "Barato";
+        case GRATIS: return "Grátis";
+        default: return "Desconhecido";
+    }
+}
+
+const char* getTipoAtracaoString(TipoAtracao tipo) {
+    switch (tipo) {
+        case RESTAURANTE: return "Restaurante";
+        case PRAIA: return "Praia";
+        case SHOW: return "Show";
+        case TEATRO: return "Teatro";
+        case PARQUE: return "Parque";
+        case MUSEU: return "Museu";
+        default: return "Desconhecido";
+    }
+}
+
+void menuRegiao(FILE *regiao) {
+    int opcao;
+    do {
+        printf("\nMenu da Região\n");
+        printf("1) Consultar os dados de uma região\n");
+        printf("2) Incluir uma descrição\n");
+        printf("3) Alterar uma descrição\n");
+        printf("4) Excluir uma descrição\n");
+        printf("5) Mostrar uma descrição\n");
+        printf("6) Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1: consultarDados(regiao); break;
+            case 2: incluirDescricao(regiao); break;
+            case 3: alterarDescricao(regiao); break;
+            case 4: excluirDescricao(regiao); break;
+            case 5: mostrarDescricao(regiao); break;
+            case 6: break;
+            default: printf("Opção inválida!\n");
+        }
+    } while (opcao != 6);
+}
+
+void conectarRegiao(FILE **regiao) {
+    *regiao = fopen("regiao.bin", "rb+");
+    if (*regiao == NULL) {
+        *regiao = fopen("regiao.bin", "wb+");
+        if (*regiao == NULL) {
+            printf("Erro ao abrir o arquivo!\n");
+            exit(1);
+        }
+    }
+}
+
+void consultarDados(FILE *regiao) {
+    AtracaoTuristica atracao;
+    fseek(regiao, 0, SEEK_SET);
+    while (fread(&atracao, sizeof(AtracaoTuristica), 1, regiao)) {
+        printf("\nTipo: %s\n", getTipoAtracaoString(atracao.tipo));
+        printf("Local: %s\n", atracao.local);
+        printf("Qualidade: %s\n", getAvaliacaoString(atracao.qualidade));
+        printf("Resumo: %s\n", atracao.resumo);
+    }
+}
+
+void incluirDescricao(FILE *regiao) {
+    AtracaoTuristica atracao;
+    printf("Informe o tipo da atração (0 - Restaurante, 1 - Praia, 2 - Show, 3 - Teatro, 4 - Parque, 5 - Museu): ");
+    scanf("%d", &atracao.tipo);
+    getchar();  
+    printf("Informe o local da atração: ");
+    fgets(atracao.local, 100, stdin);
+    atracao.local[strcspn(atracao.local, "\n")] = '\0';  
+    printf("Informe a avaliação (0 - Ótimo, 1 - Bom, 2 - Regular, 3 - Ruim, 4 - Péssimo, 5 - Caro, 6 - Barato, 7 - Grátis): ");
+    scanf("%d", &atracao.qualidade);
+    getchar();  
+    printf("Informe um resumo sobre a atração: ");
+    fgets(atracao.resumo, MAX_RESUMO, stdin);
+    fseek(regiao, 0, SEEK_END);
+    fwrite(&atracao, sizeof(AtracaoTuristica), 1, regiao);
+    printf("Descrição incluída com sucesso!\n");
+}
+
+void alterarDescricao(FILE *regiao) {
+    int index;
+    AtracaoTuristica atracao;
+    consultarDados(regiao);
+    printf("Informe o índice da atração a ser alterada: ");
+    scanf("%d", &index);
+    fseek(regiao, index * sizeof(AtracaoTuristica), SEEK_SET);
+    printf("Informe o novo tipo da atração: ");
+    scanf("%d", &atracao.tipo);
+    getchar();  
+    printf("Informe o novo local da atração: ");
+    fgets(atracao.local, 100, stdin);
+    atracao.local[strcspn(atracao.local, "\n")] = '\0';  
+    printf("Informe a nova avaliação: ");
+    scanf("%d", &atracao.qualidade);
+    getchar();  
+    printf("Informe o novo resumo: ");
+    fgets(atracao.resumo, MAX_RESUMO, stdin);
+    fseek(regiao, index * sizeof(AtracaoTuristica), SEEK_SET);
+    fwrite(&atracao, sizeof(AtracaoTuristica), 1, regiao);
+    printf("Descrição alterada com sucesso!\n");
+}
+
+void excluirDescricao(FILE *regiao) {
+    int index;
+    AtracaoTuristica atracao;
+    consultarDados(regiao);
+    printf("Informe o índice da atração a ser excluída: ");
+    scanf("%d", &index);
+    fseek(regiao, index * sizeof(AtracaoTuristica), SEEK_SET);
+    fread(&atracao, sizeof(AtracaoTuristica), 1, regiao);
+    AtracaoTuristica vazio = {0};
+    fseek(regiao, index * sizeof(AtracaoTuristica), SEEK_SET);
+    fwrite(&vazio, sizeof(AtracaoTuristica), 1, regiao);
+    printf("Descrição excluída com sucesso!\n");
+}
+
+void mostrarDescricao(FILE *regiao) {
+    int index;
+    AtracaoTuristica atracao;
+    consultarDados(regiao);
+    printf("Informe o índice da atração a ser mostrada: ");
+    scanf("%d", &index);
+    fseek(regiao, index * sizeof(AtracaoTuristica), SEEK_SET);
+    fread(&atracao, sizeof(AtracaoTuristica), 1, regiao);
+    printf("\nTipo: %s\n", getTipoAtracaoString(atracao.tipo));
+    printf("Local: %s\n", atracao.local);
+    printf("Qualidade: %s\n", getAvaliacaoString(atracao.qualidade));
+    printf("Resumo: %s\n", atracao.resumo);
+}
+
+int main() {
+    FILE *regiao = NULL;
+    int opcao;
+    do {
+        printf("Menu Principal\n");
+        printf("1) Conectar a região desejada\n");
+        printf("2) Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                conectarRegiao(&regiao);
+                menuRegiao(regiao);
+                break;
+            case 2:
+                fclose(regiao);
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opção inválida!\n");
+        }
+    } while (opcao != 2);
+
+    return 0;
+}
