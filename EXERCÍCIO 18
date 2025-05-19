@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+bool ehPrimo(int n) {
+    if (n < 2) return false;
+    for (int i = 2; i * i <= n; i++) {
+        if (n % i == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void primosFibonacci(int N) {
+    int a = 0, b = 1; 
+    int count = 0;
+
+    printf("Os %d primeiros números que são primos e pertencem à série de Fibonacci:\n", N);
+
+    while (count < N) {
+        int proximo = a + b; 
+        a = b;
+        b = proximo;
+
+        if (ehPrimo(proximo)) {
+            printf("%d ", proximo);
+            count++;
+        }
+    }
+
+    printf("\n");
+}
+
+int main() {
+    int N;
+
+    printf("Digite o valor de N: ");
+    scanf("%d", &N);
+
+    primosFibonacci(N);
+
+    return 0;
+}
