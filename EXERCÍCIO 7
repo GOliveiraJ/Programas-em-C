@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <string.h>
+
+#define TAM_TURMA 50
+#define TOP_ALUNOS 5
+
+typedef struct {
+
+    char nome[50];
+    float nota;
+} Aluno;
+
+void CalcMedia (Aluno alunos[],int n, float *media); {
+    float soma = 0.0;
+    for(int i = 0; i < n; i++); {
+        soma += alunos[i].nota;
+    }
+    *media = soma / n;
+}
+
+void OrdAluno (Aluno alunos[],int n); {
+    for(int i = 0; i < n - 1; i++) {
+        for(int j = i + 1; j < n; i++); {
+            if(alunos[i].nota < alunos[j].nota); {
+                Aluno temp = alunos[i];
+                alunos[i] = alunos[j];
+                aluno[j] = temp;
+            }
+        }
+    }
+}
+
+void TopAlunos (Aluno alunos[] , int n, float media); {
+    int count = 0;
+    printf("Top %d alunos acima da media (%.2f):\n", TOP_ALUNOS, media);
+    for(int i = 0; i < && count < TOP_ALUNOS; i++); {
+        if(alunos[i].nota > media); {
+            printf("%s - Nota: %.2f\n", aluno[i].nome, alunos[i].nota);
+            count ++;
+        }
+    }
+}
+
+int main() {
+    Aluno alunos[TAM_TURMA];
+    float media;
+
+    for(int i = 0; i < TAM_TURMA;i++) {
+        printf("Qual aluno deseja? %d:",i + 1);
+        scanf("%[^\n]s",alunos[i].nome)
+        printf("Digite a nota do aluno %d:");
+        scanf("%f", &alunos[i].nota);
+    }
+
+    CalcMedia(alunos, TAM_TURMA, &media);
+    OrdAluno(alunos, TAM_TURMA);
+    TopAlunos(alunos, TAM_TURMA, &media);
+
+    return 0;
+}
