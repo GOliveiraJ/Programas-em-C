@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <string.h>
+
+void numeroPorExtenso(int num, char *resultado) {
+    char *unidades[] = {"", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"};
+    char *dezenas[] = {"", "dez", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"};
+    char *especiais[] = {"dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"};
+    char *centenas[] = {"", "cem", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"};
+
+    if (num == 0) {
+        strcpy(resultado, "zero");
+        return;
+    }
+
+    int M = num / 1000;
+    int C = (num % 1000) / 100;
+    int D = (num % 100) / 10;
+    int U = num % 10;
+
+    resultado[0] = '\0';
+
+    if (milhar > 0) {
+        strcat(resultado, unidades[milhar]);
+        strcat(resultado, " mil");
+    }
+
+    if (centena > 0) {
+        if (resultado[0] != '\0') strcat(resultado, " ");
+        if (num % 1000 == 100) {
+            strcat(resultado, centenas[1]); 
+        } else {
+            strcat(resultado, centenas[centena]);
+        }
+    }
+
+    if (dezena > 0) {
+        if (resultado[0] != '\0') strcat(resultado, " ");
+        if (dezena == 1 && unidade > 0) {
+            strcat(resultado, especiais[unidade]); 
+            return;
+        } else {
+            strcat(resultado, dezenas[dezena]);
+        }
+    }
+
+    if (unidade > 0) {
+        if (resultado[0] != '\0' && dezena > 0) strcat(resultado, " e ");
+        else if (resultado[0] != '\0') strcat(resultado, " ");
+        strcat(resultado, unidades[unidade]);
+    }
+}
+
+int main() {
+    int numero;
+    char texto[100];
+
+    printf("Digite um número inteiro (0 a 9999): ");
+    scanf("%d", &numero);
+
+    if (numero < 0 || numero > 9999) {
+        printf("Número fora do intervalo permitido!\n");
+        return 1;
+    }
+
+    numeroPorExtenso(numero, texto);
+
+    printf("Número por extenso: %s\n", texto);
+
+    return 0;
+}
