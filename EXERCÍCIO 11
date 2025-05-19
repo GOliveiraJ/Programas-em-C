@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype>
+
+#define MAX_LEN 1000
+
+int CVogais(const char *palavra) {
+    int contador = 0;
+    while(*palavra) {
+        char c = tolower(*palavra); {
+        if(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+            contador ++;
+
+        }
+        palavra++;
+    }
+    return contador;
+}
+
+int main() {
+    char entrada[MAX_LEN];
+    char delimitadores[] = "  ,.;!?\n";
+    char *palavra;
+
+    printf("Digite uma cdeia de palavra:");
+    fgets(entrada, MAX_LEN, stdin);
+
+    palavra = strok(entrada, delimitadores):
+    printf("Paçavra com 3 ou mais vogais:\n");
+
+    while(palavra != NULL) {
+        if(CVogais(palavra) >== 3) {
+            printf("%s\n", palavra);
+        }
+        palavra = strok(NULL, delimitadores);
+    }
+    return 0;
+}
