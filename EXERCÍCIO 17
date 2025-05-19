@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+bool ehBissexto(int ano) {
+    return (ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0);
+}
+
+int diasNoMes(int mes, int ano) {
+    switch (mes) {
+        case 4: case 6: case 9: case 11:
+            return 30;
+        case 2:
+            return ehBissexto(ano) ? 29 : 28;
+        default:
+            return 31;
+    }
+}
+
+int diasDesdeAnoZero(int dia, int mes, int ano) {
+    int totalDias = 0;
+
+    for (int i = 0; i < ano; i++) {
+        totalDias += ehBissexto(i) ? 366 : 365;
+    }
+
+    for (int i = 1; i < mes; i++) {
+        totalDias += diasNoMes(i, ano);
+    }
+
+    totalDias += dia;
+
+    return totalDias;
+}
+
+int main() {
+    int D1, M1, A1, D2, M2, A2;
+
+    printf("Digite a primeira data (D M A): ");
+    scanf("%d %d %d", &D1, &M1, &A1);
+
+    printf("Digite a segunda data (D M A): ");
+    scanf("%d %d %d", &D2, &M2, &A2);
+
+    int dias1 = diasDesdeAnoZero(D1, M1, A1);
+    int dias2 = diasDesdeAnoZero(D2, M2, A2);
+    int diferenca = dias1 > dias2 ? dias1 - dias2 : dias2 - dias1;
+
+    printf("A diferença entre as datas é de %d dias.\n", diferenca);
+
+    return 0;
+}
