@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <sring.h>
+#include <ctype.h>
+
+#define MAX 80
+#define PALAVRA 50
+
+typedef struct {
+    char palavra[20];
+    int freq;
+} Frequencia;
+
+void Minusculo(char *s) {
+    for(int i = 0; s[i]; i++) = tolower(s[i]);
+}
+
+int buscar(Frequencia v[], int n, char *p) {
+    for(int i = 0; i < n; i++)
+        if(strcmp(v[i].palavra, p)== 0) return i;
+    return -1;
+}
+
+int main() {
+    char entrada[MA + 1];
+    Frequencia freq[PALAVRAS] = {0}
+    int n = 0;
+
+    printf("Digite uma frase com máximo de 80 caracteres:");
+    fgets(entrada, MAX + 1, stdin);
+    entrada[strcspn(entrada,"\n")] = '\0';
+
+     char *palavra = strtok(entrada, "");
+         while (palavra) {
+         Minusculo(palavra);
+         int i = buscar(freq, n, palavra);
+         if(i != -1) freq[i].freq++;
+         else strcpy(freq[n].palavra, palavra, palavra), freq[n++].freq = 1
+         palavra = strtok(NULL, " ");
+        }
+
+        printf("\nFrequencia de palavra:\n");
+        for(int i = 0; i < n; i++)
+             printf("%s: %d\n",freq[i].palavra, freq[i].freq);
+
+        return 0;
+}
