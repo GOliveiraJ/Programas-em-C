@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <ctype.h> 
+
+int main() {
+    char cadeia[81];
+    int i = 0;
+    int totalCaracteres = 0;
+    int numVogais = 0;
+
+    printf("Digite uma cadeia de caracteres (máximo 80 caracteres): ");
+    fgets(cadeia, sizeof(cadeia), stdin);
+
+    while (cadeia[i] != '\0' && i < 80) {
+        char c = cadeia[i];
+
+        if (c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U' || 
+            c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+            numVogais++;
+        }
+
+        if (isalpha(c)) {
+            totalCaracteres++;
+        }
+
+        i++;
+    }
+
+    double percentualVogais = 0;
+    if (totalCaracteres > 0) {
+        percentualVogais = (double)numVogais / totalCaracteres * 100;
+    }
+
+    printf("Número de vogais: %d\n", numVogais);
+    printf("Percentual de vogais em relação aos caracteres alfabéticos: %.2f%%\n", percentualVogais);
+
+    return 0;
+}
