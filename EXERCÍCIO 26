@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Função para gerar uma carta aleatória entre 1 e 13
+int gerarCarta() {
+    return rand() % 13 + 1;
+}
+
+// Função para calcular o valor da carta
+int valorCarta(int carta, int somaAtual) {
+    if (carta >= 11 && carta <= 13) {
+        return 10; // J, Q, K valem 10
+    } else if (carta == 1) {
+        return (somaAtual + 11 <= 21) ? 11 : 1; // Ás pode valer 11 ou 1
+    } else {
+        return carta; // Cartas de 2 a 10
+    }
+}
+
+int main() {
+    srand(time(NULL)); // Inicializa o gerador de números aleatórios
+
+    int somaCliente = 0, somaBanca = 0;
+    int carta;
+    char escolha;
+
+    // Cliente recebe duas cartas
+    printf("Suas cartas:\n");
+    for (int i = 0; i < 2; i++) {
+        carta = gerarCarta();
+        somaCliente += valorCarta(carta, somaCliente);
+        printf("Carta %d: %d\n", i + 1, carta);
+    }
+    printf("Soma das suas cartas: %d\n", somaCliente);
+
+    // Cliente decide se quer mais cartas
+    while (somaCliente < 21) {
+        printf("Deseja uma nova carta? (s/n): ");
+        scanf(" %c", &escolha);
+
+        if (escolha == 'n' || escolha == 'N') {
+            break;
+        } else if (escolha == 's' || escolha == 'S') {
+            carta = gerarCarta();
+            somaCliente += valorCarta(carta, somaCliente);
+            printf("Nova carta: %d\n", carta);
+            printf("Soma das suas cartas: %d\n", somaCliente);
+        } else {
+            printf("Escolha inválida. Digite 's' para sim ou 'n' para não.\n");
+        }
+
+        if (somaCliente > 21) {
+            printf("Você ultrapassou 21! Sua soma é %d. Você perdeu.\n", somaCliente);
+            return 0;
+        }
+    }
+
+    // Turno da banca
+    printf("\nTurno da banca:\n");
+    while (somaBanca <= somaCliente && somaBanca < 21) {
+        carta = gerarCarta();
+        somaBanca += valorCarta(carta, somaBanca);
+        printf("Nova carta da banca: %d\n", carta);
+        printf("Soma das cartas da banca: %d\n", somaBanca);
+    }
+
+    // Determina o vencedor
+    printf("\nResultado:\n");
+    if (somaBanca > 21 || somaBanca < somaCliente) {
+        printf("Você venceu!\n");
+    } else if (somaBanca > somaCliente) {
+        printf("A banca venceu!\n");
+    } else {
+        printf("Empate!\n");
+    }
+
+    return 0;
+}
