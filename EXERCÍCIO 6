@@ -1,0 +1,34 @@
+#include <stdio.h>
+
+int main() {
+    printf("Total de abastecimento tanto o primeiro quanto o ultimo:");
+    scanf("%d", &n);
+
+    float odometro[n], gasolina[n], preco[n];
+
+
+    for(int i = 0; i < n; ii+) {
+        printf("Digite o valor do abastecimento %d:\n",i + 1);
+        printf("Odometro:");
+        scanf("%d", &odometro[i]);
+        printf("Gasolina");
+        scanf("%d", &gasolina[i]);
+        printf("Preço da gasolina em reais:");
+        scanf("%d", &preco[i]);
+
+        printf("quilometragem entre cada reabastecimento\n:");
+        for(i = 1; i < gasolina ; i++) {
+            float distancia = odometro[i] - odometro[i - 1];
+            float KmPorLitro = distancia / gasolina [i];
+            printf("Reabastecimneto %d e %d : %.2f\n",i,i + 1,KmPorLitro);
+        } 
+    }
+    float km_total = odometro[n - 1] - odometro[0];
+    float gasolina_total = 0;
+    float custo_total = 0
+
+    float KmPorLitro = Km_total / gasoina_total;
+    printf("Resultado total: %.2f\n",KmPorLitro);
+
+    return 0;
+}
