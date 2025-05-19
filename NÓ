@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Estrutura para armazenar os dados do aluno
+typedef struct No {
+    char nome[100];
+    float nota;
+    struct No *proximo;
+} No;
+
+// Função para criar um novo nó
+No *criarNo(const char *nome, float nota) {
+    No *novoNo = (No *)malloc(sizeof(No));
+    if (!novoNo) {
+        printf("Erro ao alocar memória!\n");
+        exit(1);
+    }
+    strcpy(novoNo->nome, nome);
+    novoNo->nota = nota;
+    novoNo->proximo = NULL;
+    return novoNo;
+}
+
+// Função para inserir um nó na lista
+void inserirNo(No **cabeca, const char *nome, float nota) {
+    No *novoNo = criarNo(nome, nota);
+    novoNo->proximo = *cabeca;
+    *cabeca = novoNo;
+}
+
+// Função para procurar e remover um nó da lista
+void removerNo(No **cabeca, const char *nome) {
+    No **atual = cabeca;
+    while (*atual && strcmp((*atual)->nome, nome) != 0) {
+        atual = &(*atual)->proximo;
+    }
+
+    if (*atual) {
+        No *temp = *atual;
+        *atual = (*atual)->proximo;
+        printf("Nota de %s: %.2f\n", temp->nome, temp->nota);
+        free(temp);
+    } else {
+        printf("Nome %s não encontrado!\n", nome);
+    }
+}
+
+// Função para liberar a lista
+void liberarLista(No *cabeca) {
+    while (cabeca) {
+        No *temp = cabeca;
+        cabeca = cabeca->proximo;
+        free(temp);
+    }
+}
+
+// Função para carregar dados do arquivo binário
+void carregarArquivo(const char *nomeArquivo, No **cabeca) {
+    FILE *arquivo = fopen(nomeArquivo, "rb");
+    if (!arquivo) {
+        printf("Erro ao abrir o arquivo %s!\n", nomeArquivo);
+        exit(1);
+    }
+
+    char nome[100];
+    float nota;
+    while (fread(nome, sizeof(char), 100, arquivo) == 100 && fread(&nota, sizeof(float), 1, arquivo) == 1) {
+        inserirNo(cabeca, nome, nota);
+    }
+
+    fclose(arquivo);
+}
+
+int main() {
+    No *lista = NULL;
+    char nomeArquivo[100];
+    char nomeBusca[100];
+
+    printf("Digite o nome do arquivo binário: ");
+    scanf("%s", nomeArquivo);
+
+    carregarArquivo(nomeArquivo, &lista);
+
+    while (lista) {
+        printf("Digite o nome para buscar a nota (ou "fim" para encerrar): ");
+        scanf("%s", nomeBusca);
+
+        if (strcmp(nomeBusca, "fim") == 0) {
+            break;
+        }
+
+        removerNo(&lista, nomeBusca);
+    }
+
+    liberarLista(lista);
+    return 0;
+}
