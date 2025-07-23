@@ -1,0 +1,195 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+int total_rotacoes = 0;
+int total_comparacoes = 0;
+
+typedef struct Node {
+    int chave;
+    struct Node *esquerda, *direita;
+    int altura;
+} Node;
+
+int altura(Node *no) {
+    return no ? no->altura : 0;
+}
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+Node* criarNo(int chave) {
+    Node* novo = (Node*)malloc(sizeof(Node));
+    novo->chave = chave;
+    novo->esquerda = novo->direita = NULL;
+    novo->altura = 1;
+    return novo;
+}
+
+Node* rotacaoDireita(Node* y) {
+    total_rotacoes++;  
+    Node* x = y->esquerda;
+    Node* T2 = x->direita;
+
+    x->direita = y;
+    y->esquerda = T2;
+
+    y->altura = max(altura(y->esquerda), altura(y->direita)) + 1;
+    x->altura = max(altura(x->esquerda), altura(x->direita)) + 1;
+
+    return x;
+}
+
+Node* rotacaoEsquerda(Node* x) {
+    total_rotacoes++; 
+    Node* y = x->direita;
+    Node* T2 = y->esquerda;
+
+    y->esquerda = x;
+    x->direita = T2;
+
+    x->altura = max(altura(x->esquerda), altura(x->direita)) + 1;
+    y->altura = max(altura(y->esquerda), altura(y->direita)) + 1;
+
+    return y;
+}
+
+int fatorBalanceamento(Node* no) {
+    return no ? altura(no->esquerda) - altura(no->direita) : 0;
+}
+
+Node* inserir(Node* raiz, int chave) {
+    if (!raiz)
+        return criarNo(chave);
+
+    total_comparacoes++;
+    if (chave < raiz->chave)
+        raiz->esquerda = inserir(raiz->esquerda, chave);
+    else {
+        total_comparacoes++;
+        if (chave > raiz->chave)
+            raiz->direita = inserir(raiz->direita, chave);
+        else
+            return raiz; 
+    }
+
+    raiz->altura = max(altura(raiz->esquerda), altura(raiz->direita)) + 1;
+    int balance = fatorBalanceamento(raiz);
+
+    if (balance > 1 && chave < raiz->esquerda->chave)
+        return rotacaoDireita(raiz);
+    if (balance < -1 && chave > raiz->direita->chave)
+        return rotacaoEsquerda(raiz);
+    if (balance > 1 && chave > raiz->esquerda->chave) {
+        raiz->esquerda = rotacaoEsquerda(raiz->esquerda);
+        return rotacaoDireita(raiz);
+    }
+    if (balance < -1 && chave < raiz->direita->chave) {
+        raiz->direita = rotacaoDireita(raiz->direita);
+        return rotacaoEsquerda(raiz);
+    }
+
+    return raiz;
+}
+
+Node* menorValor(Node* no) {
+    Node* atual = no;
+    while (atual && atual->esquerda) {
+        total_comparacoes++; 
+        atual = atual->esquerda;
+    }
+    return atual;
+}
+
+Node* remover(Node* raiz, int chave) {
+    if (!raiz)
+        return raiz;
+
+    total_comparacoes++;
+    if (chave < raiz->chave)
+        raiz->esquerda = remover(raiz->esquerda, chave);
+    else {
+        total_comparacoes++;
+        if (chave > raiz->chave)
+            raiz->direita = remover(raiz->direita, chave);
+        else {
+            if (!raiz->esquerda || !raiz->direita) {
+                Node* temp = raiz->esquerda ? raiz->esquerda : raiz->direita;
+                free(raiz);
+                return temp;
+            }
+            Node* temp = menorValor(raiz->direita);
+            raiz->chave = temp->chave;
+            raiz->direita = remover(raiz->direita, temp->chave);
+        }
+    }
+
+    raiz->altura = max(altura(raiz->esquerda), altura(raiz->direita)) + 1;
+    int balance = fatorBalanceamento(raiz);
+
+    if (balance > 1 && fatorBalanceamento(raiz->esquerda) >= 0)
+        return rotacaoDireita(raiz);
+    if (balance > 1 && fatorBalanceamento(raiz->esquerda) < 0) {
+        raiz->esquerda = rotacaoEsquerda(raiz->esquerda);
+        return rotacaoDireita(raiz);
+    }
+    if (balance < -1 && fatorBalanceamento(raiz->direita) <= 0)
+        return rotacaoEsquerda(raiz);
+    if (balance < -1 && fatorBalanceamento(raiz->direita) > 0) {
+        raiz->direita = rotacaoDireita(raiz->direita);
+        return rotacaoEsquerda(raiz);
+    }
+
+    return raiz;
+}
+
+void emOrdem(Node* raiz) {
+    if (raiz) {
+        emOrdem(raiz->esquerda);
+        printf("%d\n", raiz->chave);
+        emOrdem(raiz->direita);
+    }
+}
+
+void liberarArvore(Node* raiz) {
+    if (raiz) {
+        liberarArvore(raiz->esquerda);
+        liberarArvore(raiz->direita);
+        free(raiz);
+    }
+}
+
+int alturaFinal(Node* raiz) {
+    return altura(raiz);
+}
+
+int main() {
+    int N, K, chave;
+    Node* raiz = NULL;
+
+    scanf("%d", &N);
+    for (int i = 0; i < N; i++) {
+        scanf("%d", &chave);
+        raiz = inserir(raiz, chave);
+    }
+
+    emOrdem(raiz);
+
+    scanf("%d", &K);
+    for (int i = 0; i < K; i++) {
+        scanf("%d", &chave);
+        raiz = remover(raiz, chave);
+    }
+
+    emOrdem(raiz);
+
+    // Desempenho pode ser verificado aqui se desejado:
+    // int altura = alturaFinal(raiz);
+    // printf("Altura final: %d\n", altura);
+    // printf("Total rotacoes: %d\n", total_rotacoes);
+    // printf("Total comparacoes: %d\n", total_comparacoes);
+
+    liberarArvore(raiz);
+    return 0;
+}
